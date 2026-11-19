@@ -15,7 +15,7 @@ from sample_polls import LUNCH_SPOT_POLLDATA, MEETUP_NO_VOTES_POLLDATA
 from voting.db import PollStorage
 
 # Same profile and endpoint as `python -m voting.app`.
-boto3.setup_default_session(profile_name="dev")
+boto3.setup_default_session(profile_name="local")
 
 # Same host/port as python -m voting.app (app.run(port=5000)).
 BASE_URL = "http://127.0.0.1:5000"

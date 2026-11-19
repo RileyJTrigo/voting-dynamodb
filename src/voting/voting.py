@@ -1,5 +1,5 @@
 import secrets
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from voting.db import (
     DatabaseUnavailableError,
@@ -75,7 +75,7 @@ class VotingApp:
         # Opaque random id: not sequential, so clients cannot infer how many
         # polls exist or guess the next id. secrets.token_hex(4) → 8 hex chars.
         poll_id = secrets.token_hex(4)
-        created_at = datetime.now(timezone.utc).isoformat(timespec="milliseconds")
+        created_at = datetime.now(UTC).isoformat(timespec="milliseconds")
 
         poll = PollData(
             poll_id=poll_id,

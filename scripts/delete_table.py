@@ -1,7 +1,7 @@
 """Delete the Polls table in DynamoDB Local.
 
 Prompts for confirmation unless -y is passed.
-Selects the dev AWS profile. Run this on your laptop, with DynamoDB Local up.
+Selects the local AWS profile. Run this on your laptop, with DynamoDB Local up.
 """
 
 import argparse
@@ -57,5 +57,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    boto3.setup_default_session(profile_name="dev")
+    boto3.setup_default_session(profile_name="local")
     main()

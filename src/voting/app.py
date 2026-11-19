@@ -154,7 +154,7 @@ def create_app(voting_app: VotingApp) -> Flask:
 def launch(dev: bool = False) -> Flask:
     """Build PollStorage + VotingApp + Flask app (for gunicorn too).
 
-    dev=True talks to DynamoDB Local. The caller selects the dev AWS profile
+    dev=True talks to DynamoDB Local. The caller selects the local AWS profile
     before this runs. The default uses the instance role or the default profile.
     """
     storage = PollStorage(dev=dev)
@@ -171,7 +171,7 @@ def launch(dev: bool = False) -> Flask:
 
 
 if __name__ == "__main__":
-    boto3.setup_default_session(profile_name="dev")
+    boto3.setup_default_session(profile_name="local")
     try:
         app = launch(dev=True)
     except RuntimeError as exc:

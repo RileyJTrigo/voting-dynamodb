@@ -1,7 +1,7 @@
 """Create the Polls table in DynamoDB Local.
 
 Fails if the table already exists. To reset, run delete_table.py first.
-Selects the dev AWS profile. Run this on your laptop, with DynamoDB Local up.
+Selects the local AWS profile. Run this on your laptop, with DynamoDB Local up.
 """
 
 import sys
@@ -46,5 +46,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    boto3.setup_default_session(profile_name="dev")
+    boto3.setup_default_session(profile_name="local")
     main()

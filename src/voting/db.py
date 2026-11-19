@@ -5,6 +5,7 @@ from botocore.exceptions import BotoCoreError, ClientError
 from voting.poll_types import PollData, item_from_poll_data, poll_data_from_item
 
 POLLS_TABLE_NAME = "Polls"
+AWS_REGION = "us-east-1"
 LOCAL_DYNAMODB_URL = "http://127.0.0.1:8000"
 
 # Note on boto3 exceptions:
@@ -39,10 +40,9 @@ class InvalidOptionError(Exception):
 class PollStorage:
     """Stores and loads polls in DynamoDB.
 
-    Credentials come from the boto3 default session: the dev profile when a
+    Credentials come from the boto3 default session: the local profile when a
     script has selected it, otherwise the default profile or the instance
-    role. The region comes from that same session: the profile's region, or
-    the region of the EC2 instance. dev=True talks to DynamoDB Local.
+    role. The region is us-east-1. dev=True talks to DynamoDB Local.
     """
 
     def __init__(self, dev: bool = False):
@@ -51,9 +51,13 @@ class PollStorage:
         dev: True for DynamoDB Local, False for Amazon DynamoDB
         """
         if dev:
-            resource = boto3.resource("dynamodb", endpoint_url=LOCAL_DYNAMODB_URL)
+            resource = boto3.resource(
+                "dynamodb",
+                region_name=AWS_REGION,
+                endpoint_url=LOCAL_DYNAMODB_URL,
+            )
         else:
-            resource = boto3.resource("dynamodb")
+            resource = boto3.resource("dynamodb", region_name=AWS_REGION)
         self._table = resource.Table(POLLS_TABLE_NAME)
 
     def ping(self) -> None:

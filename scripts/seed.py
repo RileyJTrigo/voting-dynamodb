@@ -72,5 +72,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    boto3.setup_default_session(profile_name="dev")
+    boto3.setup_default_session(profile_name="local")
     main()

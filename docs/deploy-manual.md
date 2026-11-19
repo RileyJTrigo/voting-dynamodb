@@ -1,6 +1,6 @@
-# Deploy on EC2
+# Deploy manually
 
-This document explains how to run the voting app on an EC2 instance. The Polls table is Amazon DynamoDB. Create the table before you launch the instance.
+This document explains how to create the Polls table and launch the instance from the AWS console. Create the table before you launch the instance.
 
 
 ## One-Time Setup
@@ -33,11 +33,13 @@ git remote -v
 
 ## Create the Polls table
 
+The app calls DynamoDB in `us-east-1`. In the console, set the region to **US East (N. Virginia)** before you create the table. A table created in another region is a different table.
+
 In the DynamoDB console, choose **Create table**.
 
 * Table name: `Polls`
 * Partition key: `pollId`, type String
-* Capacity mode: On-demand
+* Table settings: **Default settings**
 
 
 Create the table and wait until its status is Active. Launch the instance after the table exists. Gunicorn describes `Polls` when it starts, and it keeps restarting until that call succeeds.

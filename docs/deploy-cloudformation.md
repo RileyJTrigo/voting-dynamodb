@@ -63,7 +63,7 @@ aws cloudformation wait stack-create-complete \
   --stack-name voting-dynamodb
 ```
 
-User data installs the app and starts Gunicorn. Gunicorn calls Amazon DynamoDB with `LabInstanceProfile`. It does not use the `dev` profile.
+User data installs the app and starts Gunicorn. Gunicorn calls Amazon DynamoDB with `LabInstanceProfile`. It does not use the `local` profile.
 
 
 ## After the instance stack is complete
