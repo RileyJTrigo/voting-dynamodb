@@ -54,7 +54,9 @@ Fix reported issues before you commit.
 
 ## 5. Add a local AWS profile
 
-DynamoDB Local needs a profile named `local`. boto3 has to sign each request, so the profile holds a key and a region, but the key is not a real AWS account. Leave `[default]` as the Learner Lab account. Commands that talk to AWS keep using that account.
+This system stores data in DynamoDB, and in dev we run DynamoDB Local.  The code uses boto3 to interact with the database either way, and that library requires there to be an AWS Acess Key, and AWS Secret Key, and a Region.  
+
+For the dev environment, set these values in `~/.aws/credentials` and `~/.aws/config`.
 
 Add this block to `~/.aws/credentials`:
 
@@ -70,10 +72,6 @@ Add this block to `~/.aws/config`:
 [profile local]
 region = us-east-1
 ```
-
-`python -m voting.app` and the scripts in `scripts/` select the `local` profile and talk to DynamoDB Local at `http://127.0.0.1:8000`.
-
-The app on EC2 does not select that profile. It uses the instance profile `LabInstanceProfile` and calls DynamoDB in `us-east-1`. The table name is `Polls`.
 
 
 ## 6. Download DynamoDB Local
