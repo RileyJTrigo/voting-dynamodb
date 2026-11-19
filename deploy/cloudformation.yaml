@@ -1,0 +1,82 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Voting app on a single EC2 instance with a security group for SSH, HTTP,
+  and HTTPS, and the Polls table in Amazon DynamoDB. The instance uses
+  LabInstanceProfile so it can call DynamoDB. Deleting this stack deletes
+  the instance, the security group, and the table. User data downloads
+  deploy/userdata.sh from your GitHub fork and runs it (edit REPO_URL there
+  and push before creating the stack).
+
+Parameters:
+  GitHubUsername:
+    Type: String
+    Description: >-
+      Your GitHub username. The stack downloads
+      https://raw.githubusercontent.com/<username>/voting-dynamodb/main/deploy/userdata.sh
+      Push your REPO_URL edit to main before you create the stack.
+    AllowedPattern: "^[A-Za-z0-9](?:[A-Za-z0-9]|-(?=[A-Za-z0-9])){0,38}$"
+    ConstraintDescription: A GitHub username (letters, numbers, hyphens).
+
+Resources:
+  PollsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: Polls
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: pollId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: pollId
+          KeyType: HASH
+
+  WebSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Voting app - SSH, HTTP, and HTTPS
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+          Description: SSH
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+          Description: HTTP
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+          Description: HTTPS
+      Tags:
+        - Key: Name
+          Value: voting-dynamodb-web
+
+  VotingInstance:
+    Type: AWS::EC2::Instance
+    DependsOn: PollsTable
+    Properties:
+      # Current Amazon Linux 2023 AMI in this region (x86_64).
+      ImageId: "{{resolve:ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64}}"
+      InstanceType: t3.micro
+      KeyName: vockey
+      IamInstanceProfile: LabInstanceProfile
+      SecurityGroupIds:
+        - !GetAtt WebSecurityGroup.GroupId
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          set -euo pipefail
+          curl -fsSL "https://raw.githubusercontent.com/${GitHubUsername}/voting-dynamodb/main/deploy/userdata.sh" \
+            -o /tmp/voting-userdata.sh
+          bash /tmp/voting-userdata.sh
+      Tags:
+        - Key: Name
+          Value: voting-dynamodb
+
+Outputs:
+  PublicIP:
+    Description: Public IPv4 address of the instance
+    Value: !GetAtt VotingInstance.PublicIp
